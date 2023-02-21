@@ -14,29 +14,48 @@ app.use(express.json());
 const uri = "mongodb+srv://travelTours:G4Tz3odgo3wGNgnh@cluster0.qm6ghoc.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-async function run(){
-  try{
+async function run() {
+  try {
 
+    const allTours = client.db('travelTours').collection('allTours');
     const destinationCollections = client.db('travelTours').collection('tourDestinations');
+    const aboutCollections = client.db('travelTours').collection('tourAbouts');
+
+    // type best data in database.
+    app.get('/popularTours', async (req, res) => {
+      const title = req.query.title;
+      const query = { title: title };
+      const popularTours = await allTours.find(query).toArray();
+      res.send(popularTours);
+    })
+
     
-    // get data in database 
-    app.get('/destinations', async (req, res)=>{
+    // get destinations data in database. 
+    app.get('/destinations', async (req, res) => {
       const query = {};
       const cursor = destinationCollections.find(query);
       const destinations = await cursor.toArray();
       res.send(destinations);
     })
 
+    // get abouts data in database.
 
-  }catch(error){
+    app.get('/aboutUs', async (req, res) => {
+      const query = {};
+      const aboutInfo = await aboutCollections.find(query).toArray();
+      res.send(aboutInfo);
+    })
+
+
+  } catch (error) {
     console.log(error)
   }
-  finally{
+  finally {
 
   }
 }
 
-run().catch(err=> console.log(err))
+run().catch(err => console.log(err))
 
 
 app.get('/', (req, res) => {
