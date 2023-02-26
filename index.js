@@ -17,16 +17,40 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
   try {
 
-    const allTours = client.db('travelTours').collection('allTours');
+    const allToursCollections = client.db('travelTours').collection('allTours');
     const destinationCollections = client.db('travelTours').collection('tourDestinations');
     const aboutCollections = client.db('travelTours').collection('tourAbouts');
 
-    // type best data in database.
+    // get all Tours data in database.
+    app.get('/allTours', async (req, res)=>{
+      const query = {}
+      const alltorsData = await allToursCollections.find(query).toArray();
+      res.send(alltorsData);
+    })
+
+
+    // get PopularTours data in database.
     app.get('/popularTours', async (req, res) => {
       const title = req.query.title;
       const query = { title: title };
-      const popularTours = await allTours.find(query).toArray();
+      const popularTours = await allToursCollections.find(query).toArray();
       res.send(popularTours);
+    })
+
+    // get deals and discount tours data in database.
+    app.get('/discountTours', async (req, res)=>{
+      const title = req.query.title;
+      const query = { title}
+      const discountToursData = await allToursCollections.find(query).toArray();
+      res.send(discountToursData);
+    })
+
+    // get Perfect Tours data in database.
+    app.get('/perfect_tour', async (req, res)=> {
+      const title = req.query.title;
+      const query = {title: title};
+      const perfectTours = await allToursCollections.find(query).toArray();
+      res.send(perfectTours);
     })
 
     
@@ -39,7 +63,6 @@ async function run() {
     })
 
     // get abouts data in database.
-
     app.get('/aboutUs', async (req, res) => {
       const query = {};
       const aboutInfo = await aboutCollections.find(query).toArray();
